@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://wordle-game.us-east-2.elasticbeanstalk.com/api';
 
 interface ApiResponse {
   valid: boolean;
