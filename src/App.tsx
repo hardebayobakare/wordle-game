@@ -15,18 +15,18 @@ const Container = styled.div<{ darkMode: boolean }>`
   min-height: 100vh;
   max-height: 100vh;
   overflow: hidden;
-  background-color: ${props => props.darkMode ? '#262B3C' : 'white'};
-  color: ${props => props.darkMode ? 'white' : 'black'};
+  background-color: ${({ darkMode }) => (darkMode ? '#262B3C' : 'white')};
+  color: ${({ darkMode }) => (darkMode ? 'white' : 'black')};
 `;
 
 const Header = styled.header<{ darkMode: boolean }>`
   width: 100%;
   padding: 8px 20px;
-  border-bottom: 1px solid ${props => props.darkMode ? '#3a3a3c' : '#d3d6da'};
+  border-bottom: 1px solid ${({ darkMode }) => (darkMode ? '#3a3a3c' : '#d3d6da')};
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${props => props.darkMode ? '#262B3C' : '#f6f7f8'};
+  background-color: ${({ darkMode }) => (darkMode ? '#262B3C' : '#f6f7f8')};
 `;
 
 const HeaderSection = styled.div`
@@ -44,7 +44,7 @@ const Title = styled.h1<{ darkMode: boolean }>`
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  color: ${props => props.darkMode ? 'white' : '#1a1a1b'};
+  color: ${({ darkMode }) => (darkMode ? 'white' : '#1a1a1b')};
 `;
 
 const IconButton = styled.button<{ darkMode: boolean }>`
@@ -122,7 +122,7 @@ function App() {
 
     if (key === 'enter') {
       if (currentGuess.length !== 5) return;
-      
+
       const isValid = await validateWord(currentGuess);
       const newGuesses = [...guesses, currentGuess.toUpperCase()];
       setGuesses(newGuesses);
@@ -247,28 +247,16 @@ function App() {
           isOpen={showInstructions}
           onClose={() => setShowInstructions(false)}
           type="instructions"
-          title="How to Play"
-          darkMode={darkMode}
-        />
-
-        <Modal
-          isOpen={showStats}
-          onClose={() => setShowStats(false)}
-          type="statistics"
-          title="Statistics"
-          stats={stats}
           darkMode={darkMode}
         />
 
         <ResultModal
           isOpen={showResult}
           onClose={() => setShowResult(false)}
-          stats={{
-            played: stats.gamesPlayed,
-            victories: stats.wins
-          }}
-          correctWord={gameOver && currentGuess.toUpperCase() !== solution ? solution : undefined}
+          stats={stats}
           darkMode={darkMode}
+          gameOver={gameOver}
+          solution={solution}
         />
       </Container>
     </ThemeProvider>
