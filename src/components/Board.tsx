@@ -82,14 +82,14 @@ const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode
             <Cell key={i} darkMode={darkMode}>{letter}</Cell>
           ))}
           {emptyCells.map((_, i) => (
-            <Cell key={i} darkMode={darkMode} />
+            <Cell key={i} darkMode={darkMode}/>
           ))}
         </Row>
       )}
       {Array(remainingRows).fill('').map((_, i) => (
         <Row key={i}>
           {Array(5).fill('').map((_, j) => (
-            <Cell key={j} darkMode={darkMode} />
+            <Cell key={j} darkMode={darkMode}/>
           ))}
         </Row>
       ))}
