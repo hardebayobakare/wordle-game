@@ -46,13 +46,13 @@ const StatsIcon = styled.button`
 interface ThemeSwitchProps {
   checked: boolean;
   onChange: () => void;
-  setGameOver: (value: boolean) => void;
+  setShowResult: (value: boolean) => void;
 }
 
-const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ checked, onChange, setGameOver }) => {
+const ThemeSwitch: React.FC<ThemeSwitchProps> = ({ checked, onChange, setShowResult }) => {
   return (
     <Container>
-      <StatsIcon onClick={() => setGameOver(true)}>
+      <StatsIcon onClick={() => setShowResult(true)}>
         {darkMode ? (
           <svg width="36" height="32" viewBox="0 0 36 32" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path

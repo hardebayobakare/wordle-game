@@ -234,7 +234,7 @@ function App() {
           </HeaderSection>
           <HeaderSection>
             <ThemeSwitch
-              setGameOver={setGameOver}
+              setShowResult={setShowResult}
               checked={darkMode}
               onChange={() => setDarkMode(!darkMode)}
             />
