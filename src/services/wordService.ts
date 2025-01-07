@@ -7,13 +7,10 @@ interface ApiResponse {
 
 export const validateWord = async (word: string): Promise<boolean> => {
   try {
-    const response = await fetch(`${API_BASE_URL}/validate`, {
+    const response = await fetch(`https://corsproxy.io/?${API_BASE_URL}/validate`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': 'true',
-        'Access-Control-Max-Age': '86400'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({ word: word.toUpperCase() }),
     });
