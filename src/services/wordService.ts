@@ -7,6 +7,7 @@ interface ApiResponse {
 
 export const validateWord = async (word: string): Promise<boolean> => {
   try {
+    console.log('word', word);
     const response = await fetch(`${API_BASE_URL}/validate`, {
       method: 'POST',
       headers: {
