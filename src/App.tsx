@@ -89,9 +89,10 @@ function App() {
   const [stats, setStats] = useState({ gamesPlayed: 8, wins: 2 });
   const [darkMode, setDarkMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [invalidWord, setInvalidWord] = useState(false);
 
   const letterStatuses: { [key: string]: 'correct' | 'present' | 'absent' } = {};
-  guesses.forEach(guess => {
+  guesses.forEach((guess) => {
     guess.split('').forEach((letter, i) => {
       if (letter === solution[i]) {
         letterStatuses[letter.toLowerCase()] = 'correct';
@@ -121,16 +122,18 @@ function App() {
 
     if (key === 'enter') {
       if (currentGuess.length !== 5) return;
-
+      
       const isValid = await validateWord(currentGuess);
-      if (!isValid) {
-        // You could add some UI feedback here for invalid words
-        return;
-      }
-
       const newGuesses = [...guesses, currentGuess.toUpperCase()];
       setGuesses(newGuesses);
       setCurrentGuess('');
+
+      if (!isValid) {
+        setInvalidWord(true);
+        setTimeout(() => {
+          setInvalidWord(false);
+        }, 1000);
+      }
 
       if (currentGuess.toUpperCase() === solution) {
         setGameOver(true);
@@ -147,6 +150,7 @@ function App() {
       }
     } else if (key === 'backspace') {
       setCurrentGuess(prev => prev.slice(0, -1));
+      setInvalidWord(false);
     } else if (currentGuess.length < 5) {
       setCurrentGuess(prev => prev + key);
     }
@@ -229,6 +233,7 @@ function App() {
             currentGuess={currentGuess}
             solution={solution}
             darkMode={darkMode}
+            invalidWord={invalidWord}
           />
 
           <Keyboard

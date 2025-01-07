@@ -1,5 +1,20 @@
 import React from 'react';
-import styled from '@emotion/styled';
+import styled, { keyframes } from '@emotion/styled';
+
+const shake = keyframes`
+  10%, 90% {
+    transform: translateX(-1px);
+  }
+  20%, 80% {
+    transform: translateX(2px);
+  }
+  30%, 50%, 70% {
+    transform: translateX(-4px);
+  }
+  40%, 60% {
+    transform: translateX(4px);
+  }
+`;
 
 const BoardContainer = styled.div`
   display: flex;
@@ -10,9 +25,10 @@ const BoardContainer = styled.div`
   flex: 1;
 `;
 
-const Row = styled.div`
+const Row = styled.div<{ invalid?: boolean }>`
   display: flex;
   gap: 5px;
+  animation: ${({ invalid }) => invalid ? `${shake} 0.5s` : 'none'};
 `;
 
 const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent'; darkMode?: boolean }>`
@@ -39,7 +55,6 @@ const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent'; darkMode?: 
           return '#787c7e';
       }
     }
-    // Using rgba for transparency
     return darkMode ? 'rgba(147, 155, 159, 0.2)' : 'rgba(147, 155, 159, 0.3)';
   }};
   color: ${({ darkMode }) => darkMode ? '#ffffff' : '#1a1a1b'};
@@ -49,28 +64,32 @@ interface BoardProps {
   guesses: string[];
   currentGuess: string;
   solution: string;
-  darkMode: boolean;
+  darkMode?: boolean;
+  invalidWord?: boolean;
 }
 
-const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode }) => {
-  // Calculate remaining empty rows (should never be negative)
-  const remainingRows = Math.max(0, 6 - (guesses.length + (guesses.length < 6 ? 1 : 0)));
+const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode, invalidWord }) => {
+  const empties = 6 - (guesses.length + 1);
   const currentGuessArray = currentGuess.split('');
-  const emptyCells = Array(5 - currentGuessArray.length).fill('');
+  const remainingCells = Array(5 - currentGuessArray.length).fill('');
 
-  function getStatus(letter: string, index: number, guess: string): 'correct' | 'present' | 'absent' | undefined {
+  const getStatus = (letter: string, index: number, guess: string) => {
     if (!letter) return undefined;
-    if (guess[index] === solution[index]) return 'correct';
-    if (solution.includes(guess[index])) return 'present';
+    if (letter === solution[index]) return 'correct';
+    if (solution.includes(letter)) return 'present';
     return 'absent';
-  }
+  };
 
   return (
     <BoardContainer>
       {guesses.map((guess, i) => (
-        <Row key={i}>
+        <Row key={i} invalid={invalidWord && i === guesses.length - 1}>
           {guess.split('').map((letter, j) => (
-            <Cell key={j} status={getStatus(letter, j, guess)} darkMode={darkMode}>
+            <Cell
+              key={j}
+              status={getStatus(letter, j, guess)}
+              darkMode={darkMode}
+            >
               {letter}
             </Cell>
           ))}
@@ -81,20 +100,20 @@ const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode
           {currentGuessArray.map((letter, i) => (
             <Cell key={i} darkMode={darkMode}>{letter}</Cell>
           ))}
-          {emptyCells.map((_, i) => (
-            <Cell key={i} darkMode={darkMode} />
+          {remainingCells.map((_, i) => (
+            <Cell key={i} darkMode={darkMode}></Cell>
           ))}
         </Row>
       )}
-      {Array(remainingRows).fill('').map((_, i) => (
+      {[...Array(empties)].map((_, i) => (
         <Row key={i}>
-          {Array(5).fill('').map((_, j) => (
-            <Cell key={j} darkMode={darkMode} />
+          {[...Array(5)].map((_, j) => (
+            <Cell key={j} darkMode={darkMode}></Cell>
           ))}
         </Row>
       ))}
     </BoardContainer>
-  );
+  ); 
 };
 
 export default Board;
