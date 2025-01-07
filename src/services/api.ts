@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = 'https://imcgcspjleeptj7jgk3qjyzw440golgu.lambda-url.us-east-2.on.aws';
 
 export interface WordResponse {
   success: boolean;
