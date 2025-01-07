@@ -11,6 +11,7 @@ export const validateWord = async (word: string): Promise<boolean> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
       },
       body: JSON.stringify({ word: word.toUpperCase() }),
     });
