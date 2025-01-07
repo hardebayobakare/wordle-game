@@ -59,7 +59,7 @@ const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode
   const emptyCells = Array(5 - currentGuessArray.length).fill('');
 
   function getStatus(letter: string, index: number, guess: string): 'correct' | 'present' | 'absent' | undefined {
-    if (!letter) return undefined;
+    // if (!letter) return undefined;
     if (guess[index] === solution[index]) return 'correct';
     if (solution.includes(guess[index])) return 'present';
     return 'absent';
