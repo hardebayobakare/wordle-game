@@ -20,13 +20,14 @@ export const validateWord = async (word: string): Promise<boolean> => {
       throw new Error('Network response was not ok');
     }
 
-    const data: ApiResponse = await response.json();
-    return data.valid;
+    const data = await response.json();
+    return data.isValid; // Match the server's response key
   } catch (error) {
     console.error('Error validating word:', error);
     return false;
   }
 };
+
 
 export const getRandomWord = async (): Promise<string> => {
   try {
@@ -35,7 +36,10 @@ export const getRandomWord = async (): Promise<string> => {
       throw new Error('Network response was not ok');
     }
     const data = await response.json();
-    return data.word.toUpperCase();
+    if (!data.data || !data.data.word) {
+      throw new Error('Word not found in API response');
+    }
+    return data.data.word.toUpperCase(); // Match the API response structure
   } catch (error) {
     console.error('Error fetching random word:', error);
     return 'REACT'; // Fallback word in case of API failure
