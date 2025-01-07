@@ -39,6 +39,7 @@ const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent'; darkMode?: 
           return '#787c7e';
       }
     }
+    // Using rgba for transparency
     return darkMode ? 'rgba(147, 155, 159, 0.2)' : 'rgba(147, 155, 159, 0.3)';
   }};
   color: ${({ darkMode }) => darkMode ? '#ffffff' : '#1a1a1b'};
@@ -52,6 +53,7 @@ interface BoardProps {
 }
 
 const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode }) => {
+  // Calculate remaining empty rows (should never be negative)
   const remainingRows = Math.max(0, 6 - (guesses.length + (guesses.length < 6 ? 1 : 0)));
   const currentGuessArray = currentGuess.split('');
   const emptyCells = Array(5 - currentGuessArray.length).fill('');
