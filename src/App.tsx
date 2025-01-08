@@ -35,7 +35,6 @@ const HeaderSection = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
-
   &:last-child {
     justify-content: flex-end;
   }
@@ -152,13 +151,9 @@ function App() {
           ...prev,
           gamesPlayed: prev.gamesPlayed + 1,
         }));
-      }
-
-      if (key === "backspace") {
+      } else if (key === "backspace") {
         setCurrentGuess((prev) => prev.substring(0, prev.length - 1));
-      }
-
-      if (currentGuess.length < 5) {
+      } else if (currentGuess.length < 5) {
         setCurrentGuess((prev) => prev + key);
       }
     },
