@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import Board from "./components/Board";
 import Keyboard from "./components/Keyboard";
@@ -8,26 +8,26 @@ import ResultModal from "./components/ResultModal";
 import { theme } from "./theme";
 import { validateWord, getRandomWord } from "./services/wordService";
 
-const Container = styled.div<{ darkMode: boolean }>`
+const Container = styled.div<{ darkmode: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
   max-height: 100vh;
   overflow: hidden;
-  background-color: ${(props) => (props.darkMode ? "#262B3C" : "white")};
-  color: ${(props) => (props.darkMode ? "white" : "black")};
+  background-color: ${(props) => (props.darkmode ? "#262B3C" : "white")};
+  color: ${(props) => (props.darkmode ? "white" : "black")};
 `;
 
-const Header = styled.header<{ darkMode: boolean }>`
+const Header = styled.header<{ darkmode: boolean }>`
   width: 100%;
   padding: 8px 20px;
   border-bottom: 1px solid
-    ${(props) => (props.darkMode ? "#3a3a3c" : "#d3d6da")};
+    ${(props) => (props.darkmode ? "#3a3a3c" : "#d3d6da")};
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: ${(props) => (props.darkMode ? "#262B3C" : "#f6f7f8")};
+  background-color: ${(props) => (props.darkmode ? "#262B3C" : "#f6f7f8")};
 `;
 
 const HeaderSection = styled.div`
@@ -40,15 +40,15 @@ const HeaderSection = styled.div`
   }
 `;
 
-const Title = styled.h1<{ darkMode: boolean }>`
+const Title = styled.h1<{ darkmode: boolean }>`
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
-  color: ${(props) => (props.darkMode ? "white" : "#1a1a1b")};
+  color: ${(props) => (props.darkmode ? "white" : "#1a1a1b")};
 `;
 
-const IconButton = styled.button<{ darkMode: boolean }>`
+const IconButton = styled.button<{ darkmode: boolean }>`
   background: none;
   border: none;
   cursor: pointer;
@@ -87,12 +87,13 @@ function App() {
   const [showStats, setShowStats] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  const [stats, setStats] = useState({ gamesPlayed: 8, wins: 2 });
-  const [darkMode, setDarkMode] = useState(false);
+  const [stats, setStats] = useState({ gamesPlayed: 0, wins: 0 });
+  const [darkmode, setdarkmode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const letterStatuses: { [key: string]: "correct" | "present" | "absent" } =
     {};
+
   guesses.forEach((guess) => {
     guess.split("").forEach((letter, i) => {
       if (letter === solution[i]) {
@@ -118,23 +119,23 @@ function App() {
     initializeGame();
   }, []);
 
-  const onKeyPress = async (key: string) => {
-    if (gameOver) return;
+  const onKeyPress = useCallback(
+    async (key: string) => {
+      if (gameOver) return;
 
-    if (key === "enter") {
-      if (currentGuess.length !== 5) return;
+      if (key === "enter") {
+        if (currentGuess.length !== 5) return;
+        const isValid = await validateWord(currentGuess);
+        const newGuesses = [...guesses, currentGuess.toUpperCase()];
 
-      const isValid = await validateWord(currentGuess);
+        if (isValid) {
+          setGameOver(true);
+          setStats((prev) => ({
+            ...prev,
+            wins: prev.wins + 1,
+          }));
+        }
 
-      const newGuesses = [...guesses, currentGuess.toUpperCase()];
-
-      if (currentGuess.toUpperCase() === solution && isValid) {
-        setGameOver(true);
-        setStats((prev) => ({
-          gamesPlayed: prev.gamesPlayed + 1,
-          wins: prev.wins + 1,
-        }));
-      } else if (newGuesses.length === 6 && !isValid) {
         setGuesses(newGuesses);
         setCurrentGuess("");
         setStats((prev) => ({
@@ -142,11 +143,28 @@ function App() {
           gamesPlayed: prev.gamesPlayed + 1,
         }));
       }
-    } else if (key === "backspace") {
-      setCurrentGuess((prev) => prev.slice(0, -1));
-    } else if (currentGuess.length < 5) {
-      setCurrentGuess((prev) => prev + key);
-    }
+
+      if (key === "backspace") {
+        setCurrentGuess((prev) => prev.substring(0, prev.length - 1));
+      }
+
+      if (currentGuess.length < 5) {
+        setCurrentGuess((prev) => prev + key);
+      }
+    },
+    [currentGuess, gameOver, guesses]
+  );
+
+  const handleAccept = () => {
+    setShowResult(false);
+
+    setStats({
+      gamesPlayed: 0,
+      wins: 0,
+    });
+    setCurrentGuess("");
+    setGuesses([]);
+    setGameOver(false);
   };
 
   useEffect(() => {
@@ -169,7 +187,7 @@ function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentGuess, gameOver, gameStarted]);
+  }, [currentGuess, gameOver, gameStarted, onKeyPress]);
 
   const startGame = () => {
     setShowInstructions(false);
@@ -183,16 +201,16 @@ function App() {
         onClose={startGame}
         type="instructions"
         title="How to Play"
-        darkMode={darkMode}
+        darkmode={darkmode}
       />
     );
   }
 
   if (isLoading) {
     return (
-      <Container darkMode={darkMode}>
-        <Header darkMode={darkMode}>
-          <Title darkMode={darkMode}>WORDLE</Title>
+      <Container darkmode={darkmode}>
+        <Header darkmode={darkmode}>
+          <Title darkmode={darkmode}>WORDLE</Title>
         </Header>
         <GameContainer>
           <div>Loading...</div>
@@ -203,11 +221,11 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container darkMode={darkMode}>
-        <Header darkMode={darkMode}>
+      <Container darkmode={darkmode}>
+        <Header darkmode={darkmode}>
           <HeaderSection>
             <IconButton
-              darkMode={darkMode}
+              darkmode={darkmode}
               onClick={() => setShowInstructions(true)}
               aria-label="Help"
             >
@@ -225,13 +243,13 @@ function App() {
             </IconButton>
           </HeaderSection>
           <HeaderSection>
-            <Title darkMode={darkMode}>WORDLE</Title>
+            <Title darkmode={darkmode}>WORDLE</Title>
           </HeaderSection>
           <HeaderSection>
             <ThemeSwitch
               setShowResult={setShowResult}
-              checked={darkMode}
-              onChange={() => setDarkMode(!darkMode)}
+              checked={darkmode}
+              onChange={() => setdarkmode((prev) => !prev)}
             />
           </HeaderSection>
         </Header>
@@ -241,14 +259,13 @@ function App() {
             guesses={guesses}
             currentGuess={currentGuess}
             solution={solution}
-            darkMode={darkMode}
-            check={stats.gamesPlayed}
+            darkmode={darkmode}
           />
 
           <Keyboard
             onKeyPress={onKeyPress}
             letterStatuses={letterStatuses}
-            darkMode={darkMode}
+            darkmode={darkmode}
           />
         </GameContainer>
 
@@ -257,7 +274,7 @@ function App() {
           onClose={() => setShowInstructions(false)}
           type="instructions"
           title="How to Play"
-          darkMode={darkMode}
+          darkmode={darkmode}
         />
 
         <Modal
@@ -266,12 +283,12 @@ function App() {
           type="statistics"
           title="Statistics"
           stats={stats}
-          darkMode={darkMode}
+          darkmode={darkmode}
         />
 
         <ResultModal
           isOpen={showResult}
-          onClose={() => setShowResult(false)}
+          onClose={handleAccept}
           stats={{
             played: stats.gamesPlayed,
             victories: stats.wins,
@@ -281,7 +298,7 @@ function App() {
               ? solution
               : undefined
           }
-          darkMode={darkMode}
+          darkmode={darkmode}
         />
       </Container>
     </ThemeProvider>

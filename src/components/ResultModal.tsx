@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
-const ModalContent = styled.div<{ darkMode?: boolean }>`
+const ModalContent = styled.div<{ darkmode?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 32px;
-  background-color: ${props => props.darkMode ? '#262B3C' : '#ffffff'};
-  color: ${props => props.darkMode ? '#ffffff' : '#1a1a1b'};
+  background-color: ${props => props.darkmode ? '#262B3C' : '#ffffff'};
+  color: ${props => props.darkmode ? '#ffffff' : '#1a1a1b'};
   border-radius: 8px;
   min-width: 300px;
 `;
@@ -66,8 +66,8 @@ const Timer = styled.div`
   font-weight: bold;
 `;
 
-const Button = styled.button<{ darkMode?: boolean }>`
-  background-color: ${props => props.darkMode ? '#538d4e' : '#6aaa64'};
+const Button = styled.button<{ darkmode?: boolean }>`
+  background-color: ${props => props.darkmode ? '#538d4e' : '#6aaa64'};
   color: white;
   border: none;
   border-radius: 4px;
@@ -91,7 +91,7 @@ interface ResultModalProps {
     victories: number;
   };
   correctWord?: string;
-  darkMode: boolean;
+  darkmode: boolean;
 }
 
 const ResultModal: React.FC<ResultModalProps> = ({
@@ -99,7 +99,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
   onClose,
   stats,
   correctWord,
-  darkMode,
+  darkmode,
 }) => {
   const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
@@ -146,7 +146,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
         },
       }}
     >
-      <ModalContent darkMode={darkMode}>
+      <ModalContent darkmode={darkmode}>
         <Title>Statistics</Title>
         <StatsGrid>
           <StatBox>
@@ -167,7 +167,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
           <div>NEXT WORD IN:</div>
           <Timer>{formatTime(timeLeft)}</Timer>
         </NextWordTimer>
-        <Button darkMode={darkMode} onClick={onClose}>
+        <Button darkmode={darkmode} onClick={onClose}>
           Accept
         </Button>
       </ModalContent>
