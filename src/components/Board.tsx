@@ -52,7 +52,7 @@ interface BoardProps {
   darkMode: boolean;
 }
 
-const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode }) => {
+const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode, check }) => {
   // Calculate remaining empty rows (should never be negative)
   const remainingRows = Math.max(0, 6 - (guesses.length + (guesses.length < 6 ? 1 : 0)));
   const currentGuessArray = currentGuess.split('');
@@ -63,7 +63,7 @@ const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode
     if (letter === solution[index]) return 'correct';
     if (solution.includes(letter)) return 'present';
     return 'absent';
-  }, []);
+  }, [check]);
 
   return (
     <BoardContainer>

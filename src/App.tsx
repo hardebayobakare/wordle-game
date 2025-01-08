@@ -127,7 +127,6 @@ function App() {
       const isValid = await validateWord(currentGuess);
 
       const newGuesses = [...guesses, currentGuess.toUpperCase()];
-      setGuesses(newGuesses);
 
       if (currentGuess.toUpperCase() === solution && isValid) {
         setGameOver(true);
@@ -136,7 +135,7 @@ function App() {
           wins: prev.wins + 1,
         }));
       } else if (newGuesses.length === 6 && !isValid) {
-        // setGameOver(true);
+        setGuesses(newGuesses);
         setCurrentGuess("");
         setStats((prev) => ({
           ...prev,
@@ -243,6 +242,7 @@ function App() {
             currentGuess={currentGuess}
             solution={solution}
             darkMode={darkMode}
+            check={stats.gamesPlayed}
           />
 
           <Keyboard
