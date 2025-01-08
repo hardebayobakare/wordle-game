@@ -78,90 +78,86 @@ const Button = styled.button<{ darkmode?: boolean }>`
 `;
 
 interface ResultModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  stats: {
-    played: number;
-    victories: number;
-  };
-  darkmode: boolean;
+    isOpen: boolean;
+    onClose: () => void;
+    stats: {
+        played: number;
+        victories: number;
+    };
+    darkmode: boolean;
 }
 
 const FinalModal: React.FC<ResultModalProps> = ({
-  isOpen,
-  onClose,
-  stats,
-  darkmode,
+    isOpen,
+    onClose,
+    stats,
+    darkmode,
 }) => {
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+    const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
 
-  useEffect(() => {
-    if (!isOpen) return;
+    useEffect(() => {
+        if (!isOpen) return;
 
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+        const timer = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 0) {
+                    clearInterval(timer);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
 
-    return () => clearInterval(timer);
-  }, [isOpen]);
+        return () => clearInterval(timer);
+    }, [isOpen]);
 
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, "0")}:${String(
-      remainingSeconds
-    ).padStart(2, "0")}`;
-  };
+    const formatTime = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${String(minutes).padStart(2, "0")}:${String(
+            remainingSeconds
+        ).padStart(2, "0")}`;
+    };
 
-  return (
-    <ReactModal
-      isOpen={isOpen}
-      onRequestClose={onClose}
-      style={{
-        overlay: {
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        content: {
-          position: "relative",
-          inset: "auto",
-          padding: 0,
-          border: "none",
-          background: "none",
-          overflow: "visible",
-        },
-      }}
-    >
-      <ModalContent darkmode={darkmode}>
-        <Title>Statistics</Title>
-        <StatsGrid>
-          <StatBox>
-            <StatNumber>{stats.played}</StatNumber>
-            <StatLabel>Played</StatLabel>
-          </StatBox>
-          <StatBox>
-            <StatNumber>{stats.victories}</StatNumber>
-            <StatLabel>Victories</StatLabel>
-          </StatBox>
-        </StatsGrid>
-        <NextWordTimer>
-          <div>NEXT WORD IN:</div>
-          <Timer>{formatTime(timeLeft)}</Timer>
-        </NextWordTimer>
-        <Button darkmode={darkmode} onClick={onClose}>
-          Close
-        </Button>
-      </ModalContent>
-    </ReactModal>
-  );
+    return (
+        <ReactModal
+            isOpen={isOpen}
+            onRequestClose={onClose}
+            style={{
+                overlay: {
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                },
+                content: {
+                    position: "relative",
+                    inset: "auto",
+                    padding: 0,
+                    border: "none",
+                    background: "none",
+                    overflow: "visible",
+                },
+            }}
+        >
+            <ModalContent darkmode={darkmode}>
+                <Title>Statistics</Title>
+                <StatsGrid>
+                    <StatBox>
+                        <StatNumber>{stats.played}</StatNumber>
+                        <StatLabel>Played</StatLabel>
+                    </StatBox>
+                    <StatBox>
+                        <StatNumber>{stats.victories}</StatNumber>
+                        <StatLabel>Victories</StatLabel>
+                    </StatBox>
+                </StatsGrid>
+                <Button darkmode={darkmode} onClick={onClose}>
+                    Close
+                </Button>
+            </ModalContent>
+        </ReactModal>
+    );
 };
 
 export default FinalModal;
