@@ -7,6 +7,7 @@ import ThemeSwitch from "./components/ThemeSwitch";
 import ResultModal from "./components/ResultModal";
 import { theme } from "./theme";
 import { validateWord, getRandomWord } from "./services/wordService";
+import FinalModal from "./components/FinalModal";
 
 const Container = styled.div<{ darkmode: boolean }>`
   display: flex;
@@ -83,16 +84,25 @@ function App() {
   const [guesses, setGuesses] = useState<string[]>([]);
   const [currentGuess, setCurrentGuess] = useState("");
   const [gameOver, setGameOver] = useState(false);
+  const [totalStats, setTotalStats] = useState({ gamesPlayed: 0, wins: 0 });
   const [showInstructions, setShowInstructions] = useState(true);
   const [showStats, setShowStats] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [stats, setStats] = useState({ gamesPlayed: 0, wins: 0 });
   const [darkmode, setdarkmode] = useState(false);
+  const [finalOpen, setIsFinalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const letterStatuses: { [key: string]: "correct" | "present" | "absent" } =
     {};
+
+  useEffect(() => {
+    const storedStats = localStorage.getItem("totalStats");
+    if (storedStats) {
+      setTotalStats(JSON.parse(storedStats));
+    }
+  }, []);
 
   guesses.forEach((guess) => {
     guess.split("").forEach((letter, i) => {
@@ -155,6 +165,10 @@ function App() {
     [currentGuess, gameOver, guesses]
   );
 
+  const handleFinalModalClose = () => {
+    setIsFinalOpen(false);
+  };
+
   const handleAccept = () => {
     setShowResult(false);
 
@@ -165,6 +179,15 @@ function App() {
     setCurrentGuess("");
     setGuesses([]);
     setGameOver(false);
+    setTotalStats((prev) => {
+      const updatedStats = {
+        ...prev,
+        gamesPlayed: prev.gamesPlayed + 1,
+        wins: prev.wins + 1,
+      };
+      localStorage.setItem("totalStats", JSON.stringify(updatedStats));
+      return updatedStats;
+    });
   };
 
   useEffect(() => {
@@ -247,7 +270,7 @@ function App() {
           </HeaderSection>
           <HeaderSection>
             <ThemeSwitch
-              setShowResult={setShowResult}
+              setShowResult={setIsFinalOpen}
               checked={darkmode}
               onChange={() => setdarkmode((prev) => !prev)}
             />
@@ -298,6 +321,16 @@ function App() {
               ? solution
               : undefined
           }
+          darkmode={darkmode}
+        />
+
+        <FinalModal
+          isOpen={finalOpen}
+          onClose={handleFinalModalClose}
+          stats={{
+            played: totalStats.gamesPlayed,
+            victories: totalStats.wins,
+          }}
           darkmode={darkmode}
         />
       </Container>
