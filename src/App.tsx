@@ -8,6 +8,7 @@ import ResultModal from "./components/ResultModal";
 import { theme } from "./theme";
 import { validateWord, getRandomWord } from "./services/wordService";
 import FinalModal from "./components/FinalModal";
+import FailedModal from "./components/FailedModal";
 
 const Container = styled.div<{ darkmode: boolean }>`
   display: flex;
@@ -87,6 +88,7 @@ function App() {
   const [showInstructions, setShowInstructions] = useState(true);
   const [showStats, setShowStats] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [failedOpen, setFailedOpen] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [stats, setStats] = useState({ gamesPlayed: 0, wins: 0 });
   const [darkmode, setdarkmode] = useState(false);
@@ -164,6 +166,13 @@ function App() {
     setIsFinalOpen(false);
   };
 
+  const handleFailedModalClose = () => {
+    setFailedOpen(false);
+    setCurrentGuess("");
+    setGuesses([]);
+    setGameOver(false);
+  };
+
   const handleAccept = () => {
     setShowResult(false);
 
@@ -192,20 +201,24 @@ function App() {
   }, [gameOver]);
 
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!gameStarted) return;
-      if (e.key === "Enter") {
-        onKeyPress("enter");
-      } else if (e.key === "Backspace") {
-        onKeyPress("backspace");
-      } else if (/^[a-zA-Z]$/.test(e.key)) {
-        onKeyPress(e.key.toLowerCase());
-      }
-    };
+    if (guesses.length < 6) {
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (!gameStarted) return;
+        if (e.key === "Enter") {
+          onKeyPress("enter");
+        } else if (e.key === "Backspace") {
+          onKeyPress("backspace");
+        } else if (/^[a-zA-Z]$/.test(e.key)) {
+          onKeyPress(e.key.toLowerCase());
+        }
+      };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentGuess, gameOver, gameStarted, onKeyPress]);
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    } else {
+      setFailedOpen(true);
+    }
+  }, [currentGuess, gameOver, gameStarted, guesses.length, onKeyPress]);
 
   const startGame = () => {
     setShowInstructions(false);
@@ -326,6 +339,12 @@ function App() {
             played: totalStats.gamesPlayed,
             victories: totalStats.wins,
           }}
+          darkmode={darkmode}
+        />
+
+        <FailedModal
+          isOpen={failedOpen}
+          onClose={handleFailedModalClose}
           darkmode={darkmode}
         />
       </Container>
