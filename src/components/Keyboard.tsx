@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from '@emotion/styled';
+import React, { useEffect, useState } from "react";
+import styled from "@emotion/styled";
 
 const KeyboardContainer = styled.div`
   display: flex;
@@ -19,25 +19,30 @@ const KeyboardRow = styled.div`
   justify-content: center;
 `;
 
-const Key = styled.button<{ status?: 'correct' | 'present' | 'absent'; darkMode?: boolean }>`
-  min-width: 40px;
-  height: 52px;
+const Key = styled.button<{
+  status?: "correct" | "present" | "absent";
+  darkmode?: boolean;
+  isMobile?: boolean;
+}>`
+  flex: none;
+  width: ${({ isMobile }) => (isMobile ? "32px" : "52px")};
+  height: ${({ isMobile }) => (isMobile ? "32px" : "52px")};
   border-radius: 4px;
   border: none;
-  background-color: ${({ status, darkMode }) => {
+  background-color: ${({ status, darkmode }) => {
     if (status) {
       switch (status) {
-        case 'correct':
-          return '#6aaa64';
-        case 'present':
-          return '#c9b458';
-        case 'absent':
-          return '#787c7e';
+        case "correct":
+          return "#6aaa64";
+        case "present":
+          return "#c9b458";
+        case "absent":
+          return "#787c7e";
       }
     }
-    return darkMode ? '#565F7E' : '#D3D6DA';
+    return darkmode ? "#565F7E" : "#D3D6DA";
   }};
-  color: ${({ darkMode }) => darkMode ? '#ffffff' : '#1a1a1b'};
+  color: ${({ darkmode }) => (darkmode ? "#ffffff" : "#1a1a1b")};
   font-weight: 500;
   font-size: 1.125rem;
   cursor: pointer;
@@ -45,7 +50,8 @@ const Key = styled.button<{ status?: 'correct' | 'present' | 'absent'; darkMode?
   justify-content: center;
   align-items: center;
   text-transform: uppercase;
-  flex: ${({ children }) => children === 'enter' || children === 'backspace' ? '1.5' : '1'};
+  flex: ${({ children }) =>
+    children === "enter" || children === "backspace" ? "1.5" : "1"};
   padding: 0;
   user-select: none;
   touch-action: manipulation;
@@ -68,34 +74,71 @@ const BackspaceKey = styled(Key)`
 
 interface KeyboardProps {
   onKeyPress: (key: string) => void;
-  letterStatuses: { [key: string]: 'correct' | 'present' | 'absent' };
-  darkMode: boolean;
+  letterStatuses: { [key: string]: "correct" | "present" | "absent" };
+  darkmode: boolean;
 }
 
-const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, letterStatuses, darkMode }) => {
+const Keyboard: React.FC<KeyboardProps> = ({
+  onKeyPress,
+  letterStatuses,
+  darkmode,
+}) => {
+  const [isMobile, setIsMobile] = useState(false);
   const rows = [
-    ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
-    ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'ñ'],
-    ['enter', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'backspace']
+    ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+    ["a", "s", "d", "f", "g", "h", "j", "k", "l", "ñ"],
+    ["enter", "z", "x", "c", "v", "b", "n", "m", "backspace"],
   ];
+
+  const handleResize = () => {
+    if (window.innerWidth < 720) {
+      setIsMobile(true);
+    } else {
+      setIsMobile(false);
+    }
+  };
+
+  // create an event listener
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+
+    return window.removeEventListener("resize", handleResize);
+  }, []);
 
   return (
     <KeyboardContainer>
       {rows.map((row, i) => (
         <KeyboardRow key={i}>
           {row.map((key) => {
-            if (key === 'enter') {
+            if (key === "enter") {
               return (
-                <EnterKey key={key} onClick={() => onKeyPress(key)} darkMode={darkMode}>
+                <EnterKey
+                  key={key}
+                  onClick={() => onKeyPress(key)}
+                  darkmode={darkmode}
+                >
                   enter
                 </EnterKey>
               );
             }
-            if (key === 'backspace') {
+            if (key === "backspace") {
               return (
-                <BackspaceKey key={key} onClick={() => onKeyPress(key)} darkMode={darkMode}>
-                  <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24" width="24">
-                    <path fill="currentColor" d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z"></path>
+                <BackspaceKey
+                  key={key}
+                  onClick={() => onKeyPress(key)}
+                  darkmode={darkmode}
+                  isMobile={isMobile}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    width="24"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M22 3H7c-.69 0-1.23.35-1.59.88L0 12l5.41 8.11c.36.53.9.89 1.59.89h15c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H7.07L2.4 12l4.66-7H22v14zm-11.59-2L14 13.41 17.59 17 19 15.59 15.41 12 19 8.41 17.59 7 14 10.59 10.41 7 9 8.41 12.59 12 9 15.59z"
+                    ></path>
                   </svg>
                 </BackspaceKey>
               );
@@ -105,7 +148,8 @@ const Keyboard: React.FC<KeyboardProps> = ({ onKeyPress, letterStatuses, darkMod
                 key={key}
                 onClick={() => onKeyPress(key)}
                 status={letterStatuses[key]}
-                darkMode={darkMode}
+                darkmode={darkmode}
+                isMobile={isMobile}
               >
                 {key}
               </Key>
