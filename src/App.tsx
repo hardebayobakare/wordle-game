@@ -125,23 +125,19 @@ function App() {
       if (currentGuess.length !== 5) return;
 
       const isValid = await validateWord(currentGuess);
-      if (!isValid) {
-        // You could add some UI feedback here for invalid words
-        return;
-      }
 
       const newGuesses = [...guesses, currentGuess.toUpperCase()];
       setGuesses(newGuesses);
-      setCurrentGuess("");
 
-      if (currentGuess.toUpperCase() === solution) {
+      if (currentGuess.toUpperCase() === solution && isValid) {
         setGameOver(true);
         setStats((prev) => ({
           gamesPlayed: prev.gamesPlayed + 1,
           wins: prev.wins + 1,
         }));
-      } else if (newGuesses.length === 6) {
-        setGameOver(true);
+      } else if (newGuesses.length === 6 && !isValid) {
+        // setGameOver(true);
+        setCurrentGuess("");
         setStats((prev) => ({
           ...prev,
           gamesPlayed: prev.gamesPlayed + 1,

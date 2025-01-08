@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
 
 const BoardContainer = styled.div`
@@ -15,13 +15,11 @@ const Row = styled.div`
   gap: 5px;
 `;
 
-const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent'; darkMode?: boolean }>`
+const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent' | ''; darkMode?: boolean }>`
   width: 52px;
   height: 52px;
-  border: 2px solid ${({ status, darkMode }) => {
-    if (status) return 'transparent';
-    return darkMode ? '#3a3a3c' : '#d3d6da';
-  }};
+  border: 2px solid ${({ status, darkMode }) => 
+    status ? 'transparent' : (darkMode ? '#3a3a3c' : '#d3d6da')};
   display: flex;
   justify-content: center;
   align-items: center;
@@ -37,12 +35,14 @@ const Cell = styled.div<{ status?: 'correct' | 'present' | 'absent'; darkMode?: 
           return '#c9b458';
         case 'absent':
           return '#787c7e';
+        default:
+          return 'transparent';
       }
     }
     // Using rgba for transparency
     return darkMode ? 'rgba(147, 155, 159, 0.2)' : 'rgba(147, 155, 159, 0.3)';
   }};
-  color: ${({ darkMode }) => darkMode ? '#ffffff' : '#1a1a1b'};
+  color: ${({ darkMode }) => (darkMode ? '#ffffff' : '#1a1a1b')};
 `;
 
 interface BoardProps {
@@ -58,12 +58,12 @@ const Board: React.FC<BoardProps> = ({ guesses, currentGuess, solution, darkMode
   const currentGuessArray = currentGuess.split('');
   const emptyCells = Array(5 - currentGuessArray.length).fill('');
 
-  function getStatus(letter: string, index: number, guess: string): 'correct' | 'present' | 'absent' | undefined {
-    // if (!letter) return undefined;
-    if (guess[index] === solution[index]) return 'correct';
-    if (solution.includes(guess[index])) return 'present';
+  const getStatus = useCallback((letter: string, index: number): 'correct' | 'present' | 'absent' | '' => {
+    if (!letter) return "";
+    if (letter === solution[index]) return 'correct';
+    if (solution.includes(letter)) return 'present';
     return 'absent';
-  }
+  }, []);
 
   return (
     <BoardContainer>
