@@ -168,6 +168,14 @@ function App() {
 
   const handleFailedModalClose = () => {
     setFailedOpen(false);
+    setTotalStats((prev) => {
+      const updatedStats = {
+        ...prev,
+        gamesPlayed: prev.gamesPlayed + 1,
+      };
+      localStorage.setItem("totalStats", JSON.stringify(updatedStats));
+      return updatedStats;
+    });
     setCurrentGuess("");
     setGuesses([]);
     setGameOver(false);
