@@ -225,6 +225,7 @@ function App() {
       return () => window.removeEventListener("keydown", handleKeyDown);
     } else {
       if (guesses[guesses.length - 1].toUpperCase() !== solution) {
+        setStats({ gamesPlayed: 0, wins: 0 });
         setFailedOpen(true);
       } else {
         setFailedOpen(false);
