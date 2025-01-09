@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import ReactModal from 'react-modal';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import ReactModal from "react-modal";
+import styled from "styled-components";
 
 const ModalContent = styled.div<{ darkmode?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 32px;
-  background-color: ${props => props.darkmode ? '#262B3C' : '#ffffff'};
-  color: ${props => props.darkmode ? '#ffffff' : '#1a1a1b'};
+  background-color: ${(props) => (props.darkmode ? "#262B3C" : "#ffffff")};
+  color: ${(props) => (props.darkmode ? "#ffffff" : "#1a1a1b")};
   border-radius: 8px;
   min-width: 300px;
 `;
@@ -55,7 +55,7 @@ const NextWordTimer = styled.div`
   text-align: center;
   margin-bottom: 24px;
   font-size: 16px;
-  
+
   div:first-child {
     margin-bottom: 8px;
   }
@@ -67,7 +67,7 @@ const Timer = styled.div`
 `;
 
 const Button = styled.button<{ darkmode?: boolean }>`
-  background-color: ${props => props.darkmode ? '#538d4e' : '#6aaa64'};
+  background-color: ${(props) => (props.darkmode ? "#538d4e" : "#6aaa64")};
   color: white;
   border: none;
   border-radius: 4px;
@@ -85,6 +85,7 @@ const Button = styled.button<{ darkmode?: boolean }>`
 
 interface ResultModalProps {
   isOpen: boolean;
+  onRestart: () => void;
   onClose: () => void;
   stats: {
     played: number;
@@ -96,6 +97,7 @@ interface ResultModalProps {
 
 const ResultModal: React.FC<ResultModalProps> = ({
   isOpen,
+  onRestart,
   onClose,
   stats,
   correctWord,
@@ -107,22 +109,26 @@ const ResultModal: React.FC<ResultModalProps> = ({
     if (!isOpen) return;
 
     const timer = setInterval(() => {
-      setTimeLeft(prev => {
+      setTimeLeft((prev) => {
         if (prev <= 0) {
           clearInterval(timer);
+          onRestart(); // Call onRestart when time is up
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
+    setTimeLeft(300);
 
     return () => clearInterval(timer);
-  }, [isOpen]);
+  }, [isOpen, onRestart]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remainingSeconds
+    ).padStart(2, "0")}`;
   };
 
   return (
@@ -131,18 +137,18 @@ const ResultModal: React.FC<ResultModalProps> = ({
       onRequestClose={onClose}
       style={{
         overlay: {
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
+          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         },
         content: {
-          position: 'relative',
-          inset: 'auto',
+          position: "relative",
+          inset: "auto",
           padding: 0,
-          border: 'none',
-          background: 'none',
-          overflow: 'visible',
+          border: "none",
+          background: "none",
+          overflow: "visible",
         },
       }}
     >
@@ -158,11 +164,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
             <StatLabel>Victories</StatLabel>
           </StatBox>
         </StatsGrid>
-        {correctWord && (
-          <CorrectWord>
-            CORRECT WORD: {correctWord}
-          </CorrectWord>
-        )}
+        {correctWord && <CorrectWord>CORRECT WORD: {correctWord}</CorrectWord>}
         <NextWordTimer>
           <div>NEXT WORD IN:</div>
           <Timer>{formatTime(timeLeft)}</Timer>

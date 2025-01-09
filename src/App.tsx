@@ -121,12 +121,13 @@ function App() {
     });
   });
 
+  const initializeGame = async () => {
+    const word = await getRandomWord();
+    setSolution(word);
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const initializeGame = async () => {
-      const word = await getRandomWord();
-      setSolution(word);
-      setIsLoading(false);
-    };
     initializeGame();
   }, []);
 
@@ -164,6 +165,7 @@ function App() {
 
   const handleFinalModalClose = () => {
     setIsFinalOpen(false);
+    initializeGame();
   };
 
   const handleFailedModalClose = () => {
@@ -178,6 +180,7 @@ function App() {
     });
     setCurrentGuess("");
     setGuesses([]);
+    initializeGame();
     setGameOver(false);
   };
 
@@ -200,6 +203,7 @@ function App() {
       localStorage.setItem("totalStats", JSON.stringify(updatedStats));
       return updatedStats;
     });
+    initializeGame();
   };
 
   useEffect(() => {
@@ -244,6 +248,20 @@ function App() {
   const startGame = () => {
     setShowInstructions(false);
     setGameStarted(true);
+  };
+
+  const handleRestart = () => {
+    // Reset game state here
+    setGuesses([]);
+    setCurrentGuess("");
+    setGameOver(false);
+    setShowResult(false);
+    setStats({
+      gamesPlayed: 0,
+      wins: 0,
+    });
+    initializeGame();
+    // Optionally, reinitialize the game or fetch a new word
   };
 
   if (!gameStarted) {
@@ -341,6 +359,7 @@ function App() {
         <ResultModal
           isOpen={showResult}
           onClose={handleAccept}
+          onRestart={handleRestart}
           stats={{
             played: stats.gamesPlayed,
             victories: stats.wins,
