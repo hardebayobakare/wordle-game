@@ -139,12 +139,12 @@ function App() {
         const isValid = await validateWord(currentGuess);
         const newGuesses = [...guesses, currentGuess.toUpperCase()];
 
-        if (isValid) {
-          setGameOver(true);
+        if (isValid && currentGuess.toUpperCase() === solution) {
           setStats((prev) => ({
             ...prev,
             wins: prev.wins + 1,
           }));
+          setGameOver(true);
         }
 
         setGuesses(newGuesses);
@@ -159,7 +159,7 @@ function App() {
         setCurrentGuess((prev) => prev + key);
       }
     },
-    [currentGuess, gameOver, guesses]
+    [currentGuess, gameOver, guesses, solution]
   );
 
   const handleFinalModalClose = () => {
@@ -224,9 +224,21 @@ function App() {
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     } else {
-      setFailedOpen(true);
+      if (guesses[guesses.length - 1].toUpperCase() !== solution) {
+        setFailedOpen(true);
+      } else {
+        setFailedOpen(false);
+      }
     }
-  }, [currentGuess, gameOver, gameStarted, guesses.length, onKeyPress]);
+  }, [
+    guesses,
+    currentGuess,
+    gameOver,
+    gameStarted,
+    guesses.length,
+    onKeyPress,
+    solution,
+  ]);
 
   const startGame = () => {
     setShowInstructions(false);
